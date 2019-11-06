@@ -1,5 +1,7 @@
 package com.example.lifeprogress
 
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -16,14 +18,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createNotification() {
+        val intent = Intent(this, ResultActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 1,
+            intent, PendingIntent.FLAG_NO_CREATE
+        )
+
         val builder = NotificationCompat.Builder(this, App.CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_notification_overlay)
             .setContentTitle("Hello")
             .setContentText("world")
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        NotificationManagerCompat.from(this)
-            .notify(NOTIFICATION_ID, builder.build())
+        with(NotificationManagerCompat.from(this)) {
+            notify(NOTIFICATION_ID, builder.build())
+        }
     }
 
     companion object {
